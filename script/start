@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+require_relative '../init'
+
+require 'component_host'
+
+ComponentHost.start('sms-component') do |host|
+  host.register(SmsComponent::Start)
+end
