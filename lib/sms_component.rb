@@ -1,6 +1,7 @@
 require 'eventide/postgres'
 require 'consumer/postgres'
 require 'try'
+require 'ruby-boolean'
 
 require 'sms_component/load'
 

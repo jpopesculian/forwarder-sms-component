@@ -8,6 +8,7 @@ module SmsComponent
     attribute :from, String
     attribute :to, String
     attribute :body, String
+    attribute :valid, Boolean
 
     def inbound?
       !received_time.nil?

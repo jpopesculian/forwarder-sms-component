@@ -2,12 +2,12 @@ require_relative './exercise_init'
 
 message_sid = "SM167c72b00640f6f1885b34960e16c568"
 
-sms_fetched = Messages::Events::SmsFetched.new
-sms_fetched.message_sid = message_sid
-sms_fetched.time = "2018-05-03T18:53:57+00:00"
-sms_fetched.from = "+4368184385820"
-sms_fetched.to = "+4915735995854"
-sms_fetched.body = "Hallo"
+sms_forward = Messages::Events::Smsforward.new
+sms_forward.message_sid = message_sid
+sms_forward.time = "2018-05-03T18:53:57+00:00"
+sms_forward.from = "+4368184385820"
+sms_forward.to = "+4915735995854"
+sms_forward.body = "Hallo"
 
 stream_name = "sms-#{message_sid}"
 

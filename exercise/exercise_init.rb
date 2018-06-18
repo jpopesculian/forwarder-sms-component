@@ -8,5 +8,5 @@ require_relative '../init.rb'
 
 require 'pp'
 
-module AccountComponent; end
-include AccountComponent
+module SmsComponent; end
+include SmsComponent

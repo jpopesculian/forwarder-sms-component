@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'eventide-postgres'
   s.add_runtime_dependency 'evt-try'
+  s.add_runtime_dependency 'ruby-boolean'
 
   s.add_development_dependency 'test_bench'
 end
