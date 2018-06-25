@@ -12,5 +12,13 @@ module SmsComponent
       sms.to = fetched.to
       sms.body = fetched.body
     end
+
+    apply SmsSent do |sent|
+      sms.message_sid = sent.message_sid
+      sms.received_time = Time.parse(sent.time)
+      sms.from = sent.from
+      sms.to = sent.to
+      sms.body = sent.body
+    end
   end
 end

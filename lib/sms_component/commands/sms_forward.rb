@@ -4,7 +4,7 @@ module SmsComponent
       include Command
 
       def self.configure(receiver, attr_name: nil)
-        attr_name ||= :sms_fetch
+        attr_name ||= :sms_forward
         instance = build
         receiver.public_send("#{attr_name}=", instance)
       end
@@ -21,16 +21,16 @@ module SmsComponent
       end
 
       def call(message_sid:, time:, reply_stream_name: nil, previous_message: nil)
-        sms_fetch = self.class.build_message(Messages::Commands::SmsFetch, previous_message)
+        sms_forward = self.class.build_message(Messages::Commands::SmsForward, previous_message)
 
-        sms_fetch.message_sid = message_sid
-        sms_fetch.time = time
+        sms_forward.message_sid = message_sid
+        sms_forward.time = time
 
-        stream_name = command_stream_name(request_id)
+        stream_name = command_stream_name(message_sid)
 
-        write.(sms_fetch, stream_name, reply_stream_name: reply_stream_name)
+        write.(sms_forward, stream_name, reply_stream_name: reply_stream_name)
 
-        sms_fetch
+        sms_forward
       end
     end
   end

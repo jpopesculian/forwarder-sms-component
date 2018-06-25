@@ -1,6 +1,6 @@
 module SmsComponent
   module Handlers
-    class Events
+    class Commands
       include Log::Dependency
       include Messaging::Handle
       include Messaging::StreamName
@@ -13,8 +13,13 @@ module SmsComponent
       dependency :identifier, Identifier::UUID::Random
 
       def configure
-        TwilioLibComponent::Client::SmsFetch.configure(self)
+        Messaging::Postgres::Write.configure(self)
+        Clock::UTC.configure(self)
+        Store.configure(self)
+        Identifier::UUID::Random.configure(self)
       end
+
+      category :sms
 
       handle SmsForward do |forward|
         message_sid = forward.message_sid

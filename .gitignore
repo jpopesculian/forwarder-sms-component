@@ -3,4 +3,5 @@ Gemfile.lock
 *.gem
 gems
 settings/message_store_postgres.json
+settings/twilio_client.json
 /test/package/installed
