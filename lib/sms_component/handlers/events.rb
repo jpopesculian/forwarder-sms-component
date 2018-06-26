@@ -44,6 +44,10 @@ module SmsComponent
           previous_message: sms_fetched
         )
       end
+
+      handle SmsSent do |sms_sent|
+        binding.pry
+      end
     end
   end
 end

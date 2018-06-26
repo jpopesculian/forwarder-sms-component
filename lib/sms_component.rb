@@ -2,6 +2,7 @@ require 'eventide/postgres'
 require 'consumer/postgres'
 require 'try'
 require 'ruby-boolean'
+require 'chainable_message'
 require 'twilio_lib/client'
 
 require 'sms_component/load'

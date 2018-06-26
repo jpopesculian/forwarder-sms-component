@@ -10,8 +10,8 @@ module SmsComponent
       end
 
       def self.call(message_sid:, time: nil, reply_stream_name: nil, previous_message: nil)
-        time ||= Clock::UTC.iso8601
         instance = self.build
+        time ||= Clock::UTC.iso8601
         instance.(
           message_sid: message_sid,
           time: time,
