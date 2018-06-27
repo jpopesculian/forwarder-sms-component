@@ -9,10 +9,10 @@ module SmsComponent
         receiver.public_send("#{attr_name}=", instance)
       end
 
-      def self.call(message_sid:, time: nil, reply_stream_name: nil, previous_message: nil)
+      def self.call(message_sid:, sms_id: nil, time: nil, reply_stream_name: nil, previous_message: nil)
         instance = self.build
-        time ||= Clock::UTC.iso8601
         instance.(
+          sms_id: sms_id,
           message_sid: message_sid,
           time: time,
           reply_stream_name: reply_stream_name,
@@ -20,9 +20,13 @@ module SmsComponent
         )
       end
 
-      def call(message_sid:, time:, reply_stream_name: nil, previous_message: nil)
+      def call(message_sid:, sms_id: nil, time: nil, reply_stream_name: nil, previous_message: nil)
+        sms_id ||= Identifier::UUID::Random.get
+        time ||= Clock::UTC.iso8601
+
         sms_forward = self.class.build_message(Messages::Commands::SmsForward, previous_message)
 
+        sms_forward.sms_id = sms_id
         sms_forward.message_sid = message_sid
         sms_forward.time = time
 

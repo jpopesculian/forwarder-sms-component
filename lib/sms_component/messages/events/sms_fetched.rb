@@ -4,6 +4,7 @@ module SmsComponent
       class SmsFetched
         include Messaging::Message
 
+        attribute :sms_id, String
         attribute :message_sid, String
         attribute :time, String
         attribute :from, String

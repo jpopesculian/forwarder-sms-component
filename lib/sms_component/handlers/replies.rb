@@ -10,11 +10,13 @@ module SmsComponent
 
       dependency :write, Messaging::Postgres::Write
       dependency :clock, Clock::UTC
+      dependency :uuid, Identifier::UUID::Random
       dependency :store, Store
 
       def configure
         Messaging::Postgres::Write.configure(self)
         Clock::UTC.configure(self)
+        Identifier::UUID::Random.configure(self)
         Store.configure(self)
       end
 
@@ -22,7 +24,7 @@ module SmsComponent
 
       handle RecordSmsFetched do |record_sms_fetched|
         source_message_stream_name = record_sms_fetched.metadata.source_message_stream_name
-        message_sid = Messaging::StreamName.get_id(source_message_stream_name)
+        sms_id = Messaging::StreamName.get_id(source_message_stream_name)
         sms_fetched = SmsFetched.follow(record_sms_fetched, include: [
           :message_sid,
           :time,
@@ -30,13 +32,13 @@ module SmsComponent
           :to,
           :body
         ])
-        stream_name = stream_name(message_sid)
+        sms_fetched.sms_id = sms_id
+        stream_name = stream_name(sms_id)
         write.(sms_fetched, stream_name)
       end
 
       handle RecordSmsSent do |record_sms_sent|
-        source_message_stream_name = record_sms_sent.metadata.source_message_stream_name
-        message_sid = Messaging::StreamName.get_id(source_message_stream_name)
+        sms_id = uuid.get
         sms_sent = SmsSent.follow(record_sms_sent, include: [
           :message_sid,
           :time,
@@ -44,7 +46,8 @@ module SmsComponent
           :to,
           :body
         ])
-        stream_name = stream_name(message_sid)
+        sms_sent.sms_id = sms_id
+        stream_name = stream_name(sms_id)
         write.(sms_sent, stream_name)
       end
 

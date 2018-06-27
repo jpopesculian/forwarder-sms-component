@@ -2,7 +2,8 @@ module SmsComponent
   class Sms
     include Schema::DataStructure
 
-    attribute :message_sid, String
+    attribute :id, String
+    attribute :twilio_id, String
     attribute :received_time, Time
     attribute :sent_time, Time
     attribute :from, String

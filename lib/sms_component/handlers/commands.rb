@@ -22,13 +22,13 @@ module SmsComponent
       category :sms
 
       handle SmsForward do |forward|
-        message_sid = forward.message_sid
+        sms_id = forward.sms_id
         # check if sms_forward has been initiated through store
 
         initiated = SmsForwardInitiated.follow(forward)
         initiated.processed_time = clock.iso8601
 
-        stream_name = stream_name(initiated.message_sid)
+        stream_name = stream_name(initiated.sms_id)
 
         initiated.metadata.correlation_stream_name = stream_name
         write.initial(initiated, stream_name)
