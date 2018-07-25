@@ -9,6 +9,7 @@ module SmsComponent
 
           extend Build
           extend BuildMessage
+          extend Configure
 
           category :sms
           abstract :message_class
@@ -21,6 +22,18 @@ module SmsComponent
       def configure
         Messaging::Postgres::Write.configure(self)
         Clock::UTC.configure(self)
+      end
+
+      module Configure
+        def configure(receiver, attr_name: nil)
+          attr_name ||= @default_attr_name
+          instance = build
+          receiver.public_send("#{attr_name}=", instance)
+        end
+
+        def default_attr_name(name)
+          @default_attr_name = name
+        end
       end
 
       module Build

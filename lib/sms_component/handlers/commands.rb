@@ -33,6 +33,17 @@ module SmsComponent
         initiated.metadata.correlation_stream_name = stream_name
         write.initial(initiated, stream_name)
       end
+
+      handle SmsDeliver do |deliver|
+        sms_id = deliver.sms_id
+        initiated = SmsDeliverInitiated.follow(deliver)
+        initiated.processed_time = clock.iso8601
+
+        stream_name = stream_name(initiated.sms_id)
+
+        initiated.metadata.correlation_stream_name = stream_name
+        write.initial(initiated, stream_name)
+      end
     end
   end
 end

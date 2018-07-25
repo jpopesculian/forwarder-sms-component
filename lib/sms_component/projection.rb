@@ -6,6 +6,7 @@ module SmsComponent
     entity_name :sms
 
     apply SmsFetched do |fetched|
+      sms.id = fetched.sms_id
       sms.twilio_id = fetched.message_sid
       sms.received_time = Time.parse(fetched.time)
       sms.from = fetched.from
@@ -13,12 +14,13 @@ module SmsComponent
       sms.body = fetched.body
     end
 
-    apply SmsSent do |sent|
-      sms.twilio_id = sent.message_sid
-      sms.sent_time = Time.parse(sent.time)
-      sms.from = sent.from
-      sms.to = sent.to
-      sms.body = sent.body
+    apply SmsDelivered do |delivered|
+      sms.id = delivered.sms_id
+      sms.twilio_id = delivered.message_sid
+      sms.sent_time = Time.parse(delivered.time)
+      sms.from = delivered.from
+      sms.to = delivered.to
+      sms.body = delivered.body
     end
   end
 end

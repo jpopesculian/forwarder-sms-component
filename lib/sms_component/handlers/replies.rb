@@ -38,8 +38,9 @@ module SmsComponent
       end
 
       handle RecordSmsSent do |record_sms_sent|
-        sms_id = uuid.get
-        sms_sent = SmsSent.follow(record_sms_sent, include: [
+        source_message_stream_name = record_sms_sent.metadata.source_message_stream_name
+        sms_id = Messaging::StreamName.get_id(source_message_stream_name)
+        sms_sent = SmsDelivered.follow(record_sms_sent, include: [
           :message_sid,
           :time,
           :from,

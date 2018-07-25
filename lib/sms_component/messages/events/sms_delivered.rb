@@ -1,7 +1,7 @@
 module SmsComponent
   module Messages
     module Events
-      class SmsSent
+      class SmsDelivered
         include Messaging::Message
 
         attribute :sms_id, String
