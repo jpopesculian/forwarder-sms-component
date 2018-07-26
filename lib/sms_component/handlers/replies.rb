@@ -30,7 +30,9 @@ module SmsComponent
           :time,
           :from,
           :to,
-          :body
+          :body,
+          :direction,
+          :status
         ])
         sms_fetched.sms_id = sms_id
         stream_name = stream_name(sms_id)

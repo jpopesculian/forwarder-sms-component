@@ -11,6 +11,7 @@ module SmsComponent
     attribute :body, String
     attribute :valid, Boolean
     attribute :status_callback, String
+    attribute :status, String
 
     def inbound?
       !received_time.nil?
@@ -18,6 +19,17 @@ module SmsComponent
 
     def outbound?
       !sent_time.nil?
+    end
+
+    def set_time(time, direction = "inbound")
+      parsed_time = Time.parse(time)
+      case direction
+      when "inbound"
+        self.received_time = parsed_time
+      else
+        self.sent_time = parsed_time
+      end
+      parsed_time
     end
   end
 end
