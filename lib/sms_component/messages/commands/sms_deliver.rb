@@ -9,6 +9,7 @@ module SmsComponent
         attribute :to, String
         attribute :from, String
         attribute :body, String
+        attribute :status_callback, String
       end
     end
   end

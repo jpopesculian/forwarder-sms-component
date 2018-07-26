@@ -45,7 +45,8 @@ module SmsComponent
           :time,
           :from,
           :to,
-          :body
+          :body,
+          :status_callback
         ])
         sms_sent.sms_id = sms_id
         stream_name = stream_name(sms_id)

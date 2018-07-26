@@ -21,6 +21,7 @@ module SmsComponent
       sms.from = delivered.from
       sms.to = delivered.to
       sms.body = delivered.body
+      sms.status_callback = delivered.status_callback
     end
   end
 end

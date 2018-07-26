@@ -10,6 +10,7 @@ module SmsComponent
     attribute :to, String
     attribute :body, String
     attribute :valid, Boolean
+    attribute :status_callback, String
 
     def inbound?
       !received_time.nil?

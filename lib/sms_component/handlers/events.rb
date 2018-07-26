@@ -41,6 +41,7 @@ module SmsComponent
           to: initiated.to,
           from: initiated.from,
           body: initiated.body,
+          status_callback: initiated.status_callback,
           reply_stream_name: reply_stream_name,
           previous_message: initiated
         )

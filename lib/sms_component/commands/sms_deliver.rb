@@ -5,7 +5,7 @@ module SmsComponent
 
       default_attr_name :sms_deliver
 
-      def self.call(to:, from:, body:, sms_id: nil, time: nil, reply_stream_name: nil, previous_message: nil)
+      def self.call(to:, from:, body:, status_callback: nil, sms_id: nil, time: nil, reply_stream_name: nil, previous_message: nil)
         instance = self.build
         instance.(
           sms_id: sms_id,
@@ -13,12 +13,13 @@ module SmsComponent
           from: from,
           body: body,
           time: time,
+          status_callback: status_callback,
           reply_stream_name: reply_stream_name,
           previous_message: previous_message
         )
       end
 
-      def call(to:, from:, body:, sms_id: nil, time: nil, reply_stream_name: nil, previous_message: nil)
+      def call(to:, from:, body:, status_callback: nil, sms_id: nil, time: nil, reply_stream_name: nil, previous_message: nil)
         sms_id ||= Identifier::UUID::Random.get
         time ||= Clock::UTC.iso8601
 
@@ -29,6 +30,7 @@ module SmsComponent
         sms_deliver.from = from
         sms_deliver.body = body
         sms_deliver.time = time
+        sms_deliver.status_callback = status_callback
 
         stream_name = command_stream_name(sms_id)
 
