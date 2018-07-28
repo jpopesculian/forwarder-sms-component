@@ -12,7 +12,8 @@ module SmsComponent
       sms.to = fetched.to
       sms.body = fetched.body
       sms.status = fetched.status
-      sms.set_time fetched.time, fetched.direction
+      sms.direction = fetched.direction
+      sms.time = fetched.time
     end
 
     apply SmsDelivered do |delivered|
@@ -23,7 +24,8 @@ module SmsComponent
       sms.body = delivered.body
       sms.status_callback = delivered.status_callback
       sms.status = "sending"
-      sms.set_time delivered.time, "outbound"
+      sms.direction = Sms::INBOUND_DIRECTION
+      sm.time = delivered.time
     end
   end
 end
