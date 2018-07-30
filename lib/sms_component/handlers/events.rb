@@ -48,7 +48,6 @@ module SmsComponent
       end
 
       handle SmsFetched do |sms_fetched|
-        binding.pry
         sms_id = sms_fetched.sms_id
         sms, version = store.fetch(sms_id, include: :version)
         reply_stream_name = command_stream_name(sms_id)

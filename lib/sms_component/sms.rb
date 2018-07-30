@@ -7,7 +7,7 @@ module SmsComponent
 
     attribute :id, String
     attribute :twilio_id, String
-    attribute :time, String
+    attribute :time, Time
     attribute :from, String
     attribute :to, String
     attribute :body, String
@@ -16,12 +16,16 @@ module SmsComponent
     attribute :status, String
     attribute :direction, String
 
-    def time=(time)
-      super(Time.parse(time))
+    def set_time(time)
+      self.time = Time.parse(time)
     end
 
-    def direction=(direction)
-      super(direction == INBOUND_DIRECTION ? INBOUND_DIRECTION : OUTBOUND_DIRECTION)
+    def set_direction(direction)
+      self.direction = (
+        direction == INBOUND_DIRECTION ?
+        INBOUND_DIRECTION :
+        OUTBOUND_DIRECTION
+      )
     end
 
     def inbound?

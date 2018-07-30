@@ -31,7 +31,7 @@ module SmsComponent
         stream_name = stream_name(initiated.sms_id)
 
         initiated.metadata.correlation_stream_name = stream_name
-        write.initial(initiated, stream_name)
+        write.(initiated, stream_name)
       end
 
       handle SmsDeliver do |deliver|
@@ -42,7 +42,7 @@ module SmsComponent
         stream_name = stream_name(initiated.sms_id)
 
         initiated.metadata.correlation_stream_name = stream_name
-        write.initial(initiated, stream_name)
+        write.(initiated, stream_name)
       end
     end
   end

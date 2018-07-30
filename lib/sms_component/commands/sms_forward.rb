@@ -30,7 +30,7 @@ module SmsComponent
         sms_forward.message_sid = message_sid
         sms_forward.time = time
 
-        stream_name = command_stream_name(message_sid)
+        stream_name = command_stream_name(sms_id)
 
         write.(sms_forward, stream_name, reply_stream_name: reply_stream_name)
 
