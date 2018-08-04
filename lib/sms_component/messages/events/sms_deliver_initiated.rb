@@ -11,6 +11,7 @@ module SmsComponent
         attribute :body, String
         attribute :processed_time, String
         attribute :status_callback, String
+        attribute :meta_position, Integer
       end
     end
   end

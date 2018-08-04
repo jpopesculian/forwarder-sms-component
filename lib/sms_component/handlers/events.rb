@@ -22,8 +22,17 @@ module SmsComponent
       category :sms
 
       handle SmsForwardInitiated do |initiated|
-        message_sid = initiated.message_sid
         sms_id = initiated.sms_id
+        message_sid = initiated.message_sid
+
+        position = initiated.metadata.global_position
+
+        sms = store.fetch(sms_id)
+        if sms.current?(position)
+          logger.info(tag: :ignored) { "Event ignored (Event: #{initiated.message_type}, Request ID: #{sms_id}" }
+          return
+        end
+
         reply_stream_name = command_stream_name(sms_id)
 
         sms_fetch.(
@@ -36,6 +45,14 @@ module SmsComponent
       handle SmsDeliverInitiated do |initiated|
         sms_id = initiated.sms_id
         reply_stream_name = command_stream_name(sms_id)
+
+        position = initiated.metadata.global_position
+
+        sms = store.fetch(sms_id)
+        if sms.current?(position)
+          logger.info(tag: :ignored) { "Event ignored (Event: #{initiated.message_type}, Request ID: #{sms_id}" }
+          return
+        end
 
         sms_send.(
           to: initiated.to,
@@ -52,22 +69,14 @@ module SmsComponent
         sms, version = store.fetch(sms_id, include: :version)
         reply_stream_name = command_stream_name(sms_id)
 
-        # sms_send.(
-        #   to: '+19165854267',
-        #   from: '+14158542955',
-        #   body: sms.body,
-        #   reply_stream_name: reply_stream_name,
-        #   previous_message: sms_fetched
-        # )
-
         return unless sms_fetched.metadata.reply?
-        record_sms_received = RecordSmsReceived.follow(sms_fetched)
+        record_sms_received = RecordSmsReceived.follow(sms_fetched, exclude: [:meta_position])
         write.reply(record_sms_received)
       end
 
       handle SmsDelivered do |sms_delivered|
         return unless sms_delivered.metadata.reply?
-        record_sms_sent = RecordSmsSent.follow(sms_delivered)
+        record_sms_sent = RecordSmsSent.follow(sms_delivered, exclude: [:meta_position])
         write.reply(record_sms_sent)
       end
     end

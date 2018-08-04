@@ -11,6 +11,7 @@ module SmsComponent
         attribute :to, String
         attribute :body, String
         attribute :status_callback, String
+        attribute :meta_position, Integer
       end
     end
   end

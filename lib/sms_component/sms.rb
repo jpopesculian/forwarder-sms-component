@@ -15,6 +15,7 @@ module SmsComponent
     attribute :status_callback, String
     attribute :status, String
     attribute :direction, String
+    attribute :meta_position, Integer
 
     def set_time(time)
       self.time = Time.parse(time)
@@ -38,6 +39,11 @@ module SmsComponent
 
     def contact
       inbound? ? from : to
+    end
+
+    def current?(position)
+      return false if meta_position.nil?
+      meta_position >= position
     end
   end
 end

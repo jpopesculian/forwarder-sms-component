@@ -14,6 +14,8 @@ module SmsComponent
       sms.status = fetched.status
       sms.set_direction fetched.direction
       sms.set_time fetched.time
+      sms.meta_position = fetched.meta_position
+      binding.pry
     end
 
     apply SmsDelivered do |delivered|
@@ -26,6 +28,17 @@ module SmsComponent
       sms.status = "sending"
       sms.set_direction Sms::INBOUND_DIRECTION
       sms.set_time delivered.time
+      sms.meta_position = delivered.meta_position
+    end
+
+    apply SmsForwardInitiated do |initiated|
+      sms.id = initiated.sms_id
+      sms.meta_position = initiated.meta_position
+    end
+
+    apply SmsDeliverInitiated do |initiated|
+      sms.id = initiated.sms_id
+      sms.meta_position = initiated.meta_position
     end
   end
 end

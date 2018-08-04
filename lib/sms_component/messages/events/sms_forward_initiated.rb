@@ -8,6 +8,7 @@ module SmsComponent
         attribute :message_sid, String
         attribute :time, String
         attribute :processed_time, String
+        attribute :meta_position, Integer
       end
     end
   end

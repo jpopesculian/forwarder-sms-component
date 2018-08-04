@@ -25,7 +25,16 @@ module SmsComponent
       handle RecordSmsFetched do |record_sms_fetched|
         source_message_stream_name = record_sms_fetched.metadata.source_message_stream_name
         sms_id = Messaging::StreamName.get_id(source_message_stream_name)
-        sms_fetched = SmsFetched.follow(record_sms_fetched, include: [
+        sms, version = store.fetch(sms_id, include: :version)
+
+        position = record_sms_fetched.metadata.global_position
+        if sms.current?(position)
+          logger.info(tag: :ignored) { "Event ignored (Event: #{record_sms_fetched.message_type}, Request ID: #{sms_id}" }
+          return
+        end
+        binding.pry
+
+        sms_fetched = SmsFetched.follow(record_sms_fetched, copy: [
           :message_sid,
           :time,
           :from,
@@ -35,14 +44,25 @@ module SmsComponent
           :status
         ])
         sms_fetched.sms_id = sms_id
+        sms_fetched.meta_position = position
         stream_name = stream_name(sms_id)
-        write.(sms_fetched, stream_name)
+        Try.(MessageStore::ExpectedVersion::Error) do
+          write.(sms_fetched, stream_name, expected_version: version)
+        end
       end
 
       handle RecordSmsSent do |record_sms_sent|
         source_message_stream_name = record_sms_sent.metadata.source_message_stream_name
         sms_id = Messaging::StreamName.get_id(source_message_stream_name)
-        sms_sent = SmsDelivered.follow(record_sms_sent, include: [
+        sms, version = store.fetch(sms_id, include: :version)
+
+        position = record_sms_sent.metadata.global_position
+        if sms.current?(position)
+          logger.info(tag: :ignored) { "Event ignored (Event: #{record_sms_sent.message_type}, Request ID: #{sms_id}" }
+          return
+        end
+
+        sms_sent = SmsDelivered.follow(record_sms_sent, copy: [
           :message_sid,
           :time,
           :from,
@@ -51,8 +71,11 @@ module SmsComponent
           :status_callback
         ])
         sms_sent.sms_id = sms_id
+        sms_sent.meta_position = position
         stream_name = stream_name(sms_id)
-        write.(sms_sent, stream_name)
+        Try.(MessageStore::ExpectedVersion::Error) do
+          write.(sms_sent, stream_name, expected_version: version)
+        end
       end
 
     end

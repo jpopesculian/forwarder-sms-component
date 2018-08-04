@@ -12,6 +12,7 @@ module SmsComponent
         attribute :body, String
         attribute :direction, String
         attribute :status, String
+        attribute :meta_position, Integer
       end
     end
   end
