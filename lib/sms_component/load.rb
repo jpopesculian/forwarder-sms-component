@@ -5,6 +5,7 @@ require 'sms_component/messages/events/sms_fetched'
 require 'sms_component/messages/events/sms_delivered'
 require 'sms_component/messages/events/sms_forward_initiated'
 require 'sms_component/messages/events/sms_deliver_initiated'
+require 'sms_component/messages/events/sms_updated'
 
 require 'sms_component/messages/replies/record_sms_received'
 require 'sms_component/messages/replies/record_sms_sent'

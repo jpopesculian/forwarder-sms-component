@@ -12,12 +12,14 @@ module SmsComponent
       dependency :clock, Clock::UTC
       dependency :uuid, Identifier::UUID::Random
       dependency :store, Store
+      dependency :processed, Utils::Processed
 
       def configure
         Messaging::Postgres::Write.configure(self)
         Clock::UTC.configure(self)
         Identifier::UUID::Random.configure(self)
         Store.configure(self)
+        Utils::Processed.configure(self)
       end
 
       category :sms
@@ -27,12 +29,8 @@ module SmsComponent
         sms_id = Messaging::StreamName.get_id(source_message_stream_name)
         sms, version = store.fetch(sms_id, include: :version)
 
-        position = record_sms_fetched.metadata.global_position
-        if sms.current?(position)
-          logger.info(tag: :ignored) { "Event ignored (Event: #{record_sms_fetched.message_type}, Request ID: #{sms_id}" }
-          return
-        end
-        binding.pry
+        current, ignored = processed.(record_sms_fetched, id: sms_id)
+        return ignored.() if current
 
         sms_fetched = SmsFetched.follow(record_sms_fetched, copy: [
           :message_sid,
@@ -44,7 +42,7 @@ module SmsComponent
           :status
         ])
         sms_fetched.sms_id = sms_id
-        sms_fetched.meta_position = position
+        sms_fetched.meta_position = record_sms_fetched.metadata.global_position
         stream_name = stream_name(sms_id)
         Try.(MessageStore::ExpectedVersion::Error) do
           write.(sms_fetched, stream_name, expected_version: version)
@@ -56,11 +54,8 @@ module SmsComponent
         sms_id = Messaging::StreamName.get_id(source_message_stream_name)
         sms, version = store.fetch(sms_id, include: :version)
 
-        position = record_sms_sent.metadata.global_position
-        if sms.current?(position)
-          logger.info(tag: :ignored) { "Event ignored (Event: #{record_sms_sent.message_type}, Request ID: #{sms_id}" }
-          return
-        end
+        current, ignored = processed.(record_sms_sent, id: sms_id)
+        return ignored.() if current
 
         sms_sent = SmsDelivered.follow(record_sms_sent, copy: [
           :message_sid,
@@ -71,7 +66,7 @@ module SmsComponent
           :status_callback
         ])
         sms_sent.sms_id = sms_id
-        sms_sent.meta_position = position
+        sms_sent.meta_position = record_sms_sent.metadata.global_position
         stream_name = stream_name(sms_id)
         Try.(MessageStore::ExpectedVersion::Error) do
           write.(sms_sent, stream_name, expected_version: version)

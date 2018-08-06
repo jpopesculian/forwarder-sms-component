@@ -21,8 +21,8 @@ module SmsComponent
         Store.configure(self)
       end
 
-      def call(message)
-        id = get_id(message)
+      def call(message, id: nil)
+        id ||= get_id(message)
         position = message.metadata.global_position
         projection = store.fetch(id)
         if current?(projection, position)

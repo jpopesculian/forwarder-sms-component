@@ -8,6 +8,7 @@ require 'twilio_lib/client'
 require 'sms_component/load'
 
 require 'sms_component/utils/processed'
+require 'sms_component/utils/updated'
 
 require 'sms_component/handlers/commands'
 require 'sms_component/handlers/events'

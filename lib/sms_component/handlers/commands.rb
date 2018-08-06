@@ -11,12 +11,14 @@ module SmsComponent
       dependency :clock, Clock::UTC
       dependency :store, Store
       dependency :identifier, Identifier::UUID::Random
+      dependency :processed, Utils::Processed
 
       def configure
         Messaging::Postgres::Write.configure(self)
         Clock::UTC.configure(self)
         Store.configure(self)
         Identifier::UUID::Random.configure(self)
+        Utils::Processed.configure(self)
       end
 
       category :sms
@@ -25,15 +27,12 @@ module SmsComponent
         sms_id = forward.sms_id
         sms, version = store.fetch(sms_id, include: :version)
 
-        position = forward.metadata.global_position
-        if sms.current?(position)
-          logger.info(tag: :ignored) { "Event ignored (Event: #{forward.message_type}, Request ID: #{sms_id}" }
-          return
-        end
+        current, ignored = processed.(forward)
+        return ignored.() if current
 
         initiated = SmsForwardInitiated.follow(forward)
         initiated.processed_time = clock.iso8601
-        initiated.meta_position = position
+        initiated.meta_position = forward.metadata.global_position
 
         stream_name = stream_name(initiated.sms_id)
 
@@ -47,15 +46,12 @@ module SmsComponent
         sms_id = deliver.sms_id
         sms, version = store.fetch(sms_id, include: :version)
 
-        position = deliver.metadata.global_position
-        if sms.current?(position)
-          logger.info(tag: :ignored) { "Event ignored (Event: #{deliver.message_type}, Request ID: #{sms_id}" }
-          return
-        end
+        current, ignored = processed.(deliver)
+        return ignored.() if current
 
         initiated = SmsDeliverInitiated.follow(deliver)
         initiated.processed_time = clock.iso8601
-        initiated.meta_position = position
+        initiated.meta_position = deliver.metadata.global_position
 
         stream_name = stream_name(initiated.sms_id)
 
